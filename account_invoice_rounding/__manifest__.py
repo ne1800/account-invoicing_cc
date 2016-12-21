@@ -19,7 +19,7 @@
 #
 ##############################################################################
 {'name': 'Unit rounded invoice',
- 'version': '8.0.1.0.0',
+ 'version': '10.0.1.0.0',
  'category': 'Accounting',
  'description': """
 Unit rounded invoice (_`Swedish rounding`)
@@ -50,9 +50,9 @@ You can choose the account on which the invoice line will be written
  'website': 'http://www.camptocamp.com/',
  'license': 'AGPL-3',
  'depends': ['account'],
- 'data': ['res_config_view.xml'],
+ 'data': ['views/res_config_view.xml'],
  'test': ['test/test_invoice_rounding.yml'],
- 'installable': False,
+ 'installable': True,
  'auto_install': False,
  'application': True,
  }
