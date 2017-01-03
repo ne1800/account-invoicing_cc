@@ -23,7 +23,6 @@ from odoo.tools.float_utils import float_round, float_compare
 from odoo.tools.translate import _
 
 import odoo.addons.decimal_precision as dp
-import math
 
 
 class AccountInvoice(models.Model):
