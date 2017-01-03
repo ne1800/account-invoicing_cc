@@ -8,11 +8,11 @@ class TestSwedishRounding(test_common.TransactionCase):
 
     def create_dummy_invoice(self):
         invoice = self.env['account.invoice'].create({
-            'partner_id': self.partner.id,
+            'partner_id': self.env.ref('base.res_partner_2').id,
             'currency_id': self.env.ref('base.EUR').id,
             'invoice_line_ids': [(0, 0, {
                 'name': 'Dummy invoice line',
-                'product_id': self.product.id,
+                'product_id': self.env.ref('product.product_product_1').id,
                 'invoice_line_tax_ids': [(4, self.tax.id)],
                 'account_id': self.account.id,
                 'quantity': 1,
@@ -30,15 +30,6 @@ class TestSwedishRounding(test_common.TransactionCase):
             'name': 'Rounding account',
             'code': '6666',
             'user_type_id': expense_type.id
-        })
-        self.product = self.env['product.product'].create({
-            'name': 'Dummy product',
-            'type': 'consu',
-            'lst_price': 6.67
-        })
-        self.partner = self.env['res.partner'].create({
-            'name': 'Dummy Partner',
-            'customer': True
         })
         self.tax = self.env['account.tax'].create({
             'name': 'Dummy tax 10%',
