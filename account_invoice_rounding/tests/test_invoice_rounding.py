@@ -39,7 +39,7 @@ class TestSwedishRounding(test_common.TransactionCase):
                 'account_id': self.account.id,
                 'quantity': 1,
                 'price_unit': 19.99,
-             })]
+                })]
         })
         return invoice
 
