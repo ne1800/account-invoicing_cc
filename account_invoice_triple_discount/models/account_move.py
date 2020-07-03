@@ -30,3 +30,12 @@ class AccountMove(models.Model):
                 continue
             line.update(old_values_by_line_id[line.id])
         return res
+
+    def _has_discount(self):
+        self.ensure_one()
+        return any(
+            [
+                line._compute_aggregated_discount(line.discount) > 0
+                for line in self.invoice_line_ids
+            ]
+        )
