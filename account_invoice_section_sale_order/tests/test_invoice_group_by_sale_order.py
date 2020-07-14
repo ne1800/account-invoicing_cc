@@ -16,6 +16,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
                 "partner_id": cls.partner_1.id,
                 "partner_shipping_id": cls.partner_1.id,
                 "partner_invoice_id": cls.partner_1.id,
+                "client_order_ref": "ref123",
                 "order_line": [
                     (
                         0,
@@ -79,7 +80,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
     def test_create_invoice(self):
         """ Check invoice is generated  with sale order sections."""
         result = {
-            0: self.order1_p1.name,
+            0: "".join([self.order1_p1.name, " - ", self.order1_p1.client_order_ref]),
             1: "order 1 line 1",
             2: "order 1 line 2",
             3: self.order2_p1.name,

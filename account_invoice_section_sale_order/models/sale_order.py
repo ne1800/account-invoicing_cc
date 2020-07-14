@@ -32,7 +32,7 @@ class SaleOrder(models.Model):
                             0,
                             0,
                             {
-                                "name": so.name,
+                                "name": so._get_saleorder_section_name(),
                                 "display_type": "line_section",
                                 "sequence": sequence,
                             },
@@ -44,3 +44,11 @@ class SaleOrder(models.Model):
             invoice.line_ids = section_lines
 
         return invoice_ids
+
+    def _get_saleorder_section_name(self):
+        """Returns the text for the section name."""
+        self.ensure_one()
+        if self.client_order_ref:
+            return "{} - {}".format(self.name, self.client_order_ref or "")
+        else:
+            return self.name
