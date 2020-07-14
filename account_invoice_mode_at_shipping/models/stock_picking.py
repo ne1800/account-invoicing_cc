@@ -10,18 +10,23 @@ class StockPicking(models.Model):
     _inherit = "stock.picking"
 
     def action_done(self):
-        """  """
         res = super().action_done()
-        self.with_delay()._invoicing_at_shipping()
-        return res
-
-    @job(default_channel="root.invoice_at_shipping")
-    def _invoicing_at_shipping(self):
         picking_to_invoice = self.filtered(
             lambda r: r.sale_id.partner_invoice_id.invoicing_mode == "at_shipping"
             and r.picking_type_code == "outgoing"
         )
-        if picking_to_invoice:
-            invoices = picking_to_invoice.sale_id._create_invoices()
-            for invoice in invoices:
-                invoice.with_delay()._validate_invoice()
+        for picking in picking_to_invoice:
+            picking.with_delay()._invoicing_at_shipping()
+        return res
+
+    @job(default_channel="root.invoice_at_shipping")
+    def _invoicing_at_shipping(self):
+        self.ensure_one()
+        sale_order_ids = self._get_sales_order_to_invoice()
+        invoices = sale_order_ids._create_invoices()
+        for invoice in invoices:
+            invoice.with_delay()._validate_invoice()
+        return invoices
+
+    def _get_sales_order_to_invoice(self):
+        return self.sale_id
