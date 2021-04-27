@@ -28,9 +28,17 @@ class StockPicking(models.Model):
     @job(default_channel="root.invoice_at_shipping")
     def _invoicing_at_shipping(self):
         self.ensure_one()
-        sales_order = self._get_sales_order_to_invoice()
-        partner = sales_order.partner_invoice_id
-        invoices = sales_order._create_invoices(grouped=partner.one_invoice_per_order)
+        sales = self._get_sales_order_to_invoice()
+        # Split invoice creation on partner sales grouping on invoice settings
+        sales_one_invoice_per_order = sales.filtered(
+            "partner_invoice_id.one_invoice_per_order"
+        )
+        invoices = self.env["account.move"].browse()
+        if sales_one_invoice_per_order:
+            invoices |= sales_one_invoice_per_order._create_invoices(grouped=True)
+        sales_many_invoice_per_order = sales - sales_one_invoice_per_order
+        if sales_many_invoice_per_order:
+            invoices |= sales_many_invoice_per_order._create_invoices(grouped=False)
         for invoice in invoices:
             invoice.with_delay()._validate_invoice()
         return invoices
