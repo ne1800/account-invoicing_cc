@@ -17,12 +17,18 @@ class StockPicking(models.Model):
                 picking.with_delay()._invoicing_at_shipping()
         return res
 
+    def _get_sales_order_to_invoice_at_shipping(self):
+        """Returns sales order to invoice at shipping related to the picking."""
+        return self.mapped("move_lines.sale_line_id.order_id").filtered(
+            lambda r: r.partner_invoice_id.invoicing_mode == "at_shipping"
+        )
+
     def _invoice_at_shipping(self):
         """Check if picking must be invoiced at shipping."""
         self.ensure_one()
         return (
             self.picking_type_code == "outgoing"
-            and self.sale_id.partner_invoice_id.invoicing_mode == "at_shipping"
+            and self._get_sales_order_to_invoice_at_shipping()
         )
 
     @job(default_channel="root.invoice_at_shipping")
@@ -44,6 +50,5 @@ class StockPicking(models.Model):
         return invoices or _("Nothing to invoice.")
 
     def _get_sales_order_to_invoice(self):
-        return self.mapped("move_lines.sale_line_id.order_id").filtered(
-            lambda r: r._get_invoiceable_lines()
-        )
+        sales = self._get_sales_order_to_invoice_at_shipping()
+        return sales.filtered(lambda r: r._get_invoiceable_lines())
