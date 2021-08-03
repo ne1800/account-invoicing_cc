@@ -15,7 +15,7 @@ class StockPicking(models.Model):
         return res
 
     def _invoice_at_shipping(self):
-        """Check if picking must be invoiced at shippin`g."""
+        """Check if picking must be invoiced at shipping."""
         self.ensure_one()
         return (
             self.picking_type_code == "outgoing"
