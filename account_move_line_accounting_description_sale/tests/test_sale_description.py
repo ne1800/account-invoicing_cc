@@ -10,8 +10,6 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
         super().setUpClass()
         cls.partner_1 = cls.env.ref("base.res_partner_1")
         cls.product_1 = cls.env.ref("product.product_product_1")
-        cls.product_2 = cls.env.ref("product.product_product_2")
-
         cls.product_1.accounting_description = "Product1_acc_desc"
         cls.product_1.invoice_policy = "order"
         cls.order1_p1 = cls.env["sale.order"].create(
@@ -25,6 +23,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
                         0,
                         0,
                         {
+                            "name": "order 1 line 1",
                             "product_id": cls.product_1.id,
                             "price_unit": 20,
                             "product_uom_qty": 1,
@@ -35,6 +34,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
                         0,
                         0,
                         {
+                            "name": "order 1 line 2",
                             "product_id": cls.product_1.id,
                             "price_unit": 20,
                             "product_uom_qty": 1,
@@ -46,6 +46,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
         )
         cls.order1_p1.action_confirm()
 
+        cls.product_1.accounting_description = False
         cls.order2_p1 = cls.env["sale.order"].create(
             {
                 "partner_id": cls.partner_1.id,
@@ -56,20 +57,22 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
                         0,
                         0,
                         {
-                            "product_id": cls.product_2.id,
+                            "name": "order 2 line 1",
+                            "product_id": cls.product_1.id,
                             "price_unit": 20,
                             "product_uom_qty": 1,
-                            "product_uom": cls.product_2.uom_id.id,
+                            "product_uom": cls.product_1.uom_id.id,
                         },
                     ),
                     (
                         0,
                         0,
                         {
-                            "product_id": cls.product_2.id,
+                            "name": "order 2 line 2",
+                            "product_id": cls.product_1.id,
                             "price_unit": 20,
                             "product_uom_qty": 1,
-                            "product_uom": cls.product_2.uom_id.id,
+                            "product_uom": cls.product_1.uom_id.id,
                         },
                     ),
                 ],
