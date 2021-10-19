@@ -11,6 +11,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
         cls.partner_1 = cls.env.ref("base.res_partner_1")
         cls.product_1 = cls.env.ref("product.product_product_1")
         cls.product_2 = cls.env.ref("product.product_product_2")
+        cls.product_2.invoice_policy = "order"
 
         cls.product_1.accounting_description = "Product1_acc_desc"
         cls.product_1.invoice_policy = "order"
@@ -87,7 +88,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
 
         for line in lines:
             self.assertEqual(line.name, self.product_1.accounting_description)
-            self.assertEqual(line.external_name, line.name)
+            self.assertEqual(line.external_name, self.product_1.name)
 
         # For 2nd SO make sure invoice line name isn't set to product description
 
@@ -97,5 +98,6 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
         )
 
         for line in lines:
-            self.assertNotEqual(line.name, self.product_1.accounting_description)
+            self.assertNotEqual(line.name, self.product_2.accounting_description)
+            self.assertEqual(line.name, self.product_2.name)
             self.assertEqual(line.external_name, line.name)
