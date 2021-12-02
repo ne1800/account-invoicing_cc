@@ -11,3 +11,10 @@ class ResCompany(models.Model):
              "default. You can use a python expression with the 'object' "
              "(representing sale order) and 'time' variables."
     )
+
+    invoice_section_grouping = fields.Selection(
+        [
+            ("sale_order", "Group by sale Order"),
+        ],
+        default="sale_order"
+    )
