@@ -1,5 +1,6 @@
 # Copyright 2020 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
+from collections import OrderedDict
 
 from odoo import models
 from odoo.tools.safe_eval import safe_eval, time
@@ -19,29 +20,36 @@ class SaleOrder(models.Model):
         for invoice in invoice_ids:
             if len(invoice.line_ids.mapped("sale_line_ids.order_id.id")) == 1:
                 continue
-            so = None
             sequence = 10
+            move_lines = self._get_ordered_invoice_lines(invoice)
+            # Group move lines according to their sale order
+            sale_order_move_lines_matrix = OrderedDict()
+            for move_line in move_lines:
+                sale_order = move_line.sale_line_ids.order_id
+                sale_order_move_line_ids = sale_order_move_lines_matrix.get(sale_order)
+                if not sale_order_move_line_ids:
+                    sale_order_move_lines_matrix[sale_order] = [move_line.id]
+                else:
+                    sale_order_move_line_ids.append(move_line.id)
+            # Prepare section lines for each group
             section_lines = []
-            lines = self._get_ordered_invoice_lines(invoice)
-            for line in lines:
-                if line.sale_line_ids.order_id and so != line.sale_line_ids.order_id:
-                    so = line.sale_line_ids.order_id
-                    section_lines.append(
-                        (
-                            0,
-                            0,
-                            {
-                                "name": so._get_saleorder_section_name(),
-                                "display_type": "line_section",
-                                "sequence": sequence,
-                            },
-                        )
+            for sale_order, move_line_ids in sale_order_move_lines_matrix.items():
+                section_lines.append(
+                    (
+                        0,
+                        0,
+                        {
+                            "name": sale_order._get_saleorder_section_name(),
+                            "display_type": "line_section",
+                            "sequence": sequence,
+                        },
                     )
-                    sequence += 10
-                line.sequence = sequence
+                )
                 sequence += 10
+                for move_line in self.env["account.move.line"].browse(move_line_ids):
+                    move_line.sequence += sequence
+                    sequence += 10
             invoice.line_ids = section_lines
-
         return invoice_ids
 
     def _get_ordered_invoice_lines(self, invoice):
