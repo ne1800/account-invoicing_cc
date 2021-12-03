@@ -47,7 +47,7 @@ class SaleOrder(models.Model):
                 )
                 sequence += 10
                 for move_line in self.env["account.move.line"].browse(move_line_ids):
-                    move_line.sequence += sequence
+                    move_line.sequence = sequence
                     sequence += 10
             invoice.line_ids = section_lines
         return invoice_ids
