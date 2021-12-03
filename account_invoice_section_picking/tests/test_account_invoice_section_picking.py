@@ -30,18 +30,17 @@ class TestAccountInvoiceSectionPicking(SavepointCase):
     def test_group_by_delivery_picking(self):
         invoice = (self.order_1 + self.order_2)._create_invoices()
         self.assertEqual(len(invoice), 1)
-        result = [
-            self.order_1.picking_ids.name,
-            self.order_1.order_line.name,
-            self.order_2.picking_ids.name,
-            self.order_2.order_line.name,
-        ]
-        for cnt, invoice_line in enumerate(
-            invoice.line_ids.filtered(lambda l: not l.exclude_from_invoice_tab).sorted(
-                "sequence"
-            )
-        ):
-            self.assertEqual(invoice_line.name, result[cnt])
+        result = {
+            10: (self.order_1.picking_ids.name, "line_section"),
+            20: (self.order_1.order_line.name, False),
+            30: (self.order_2.picking_ids.name, "line_section"),
+            40: (self.order_2.order_line.name, False),
+        }
+        for line in invoice.line_ids.filtered(
+            lambda l: not l.exclude_from_invoice_tab
+        ).sorted("sequence"):
+            self.assertEqual(line.name, result[line.sequence][0])
+            self.assertEqual(line.display_type, result[line.sequence][1])
 
     # TODO: add test with warehouse using multiple delivery steps to ensure
     #  it's the delivery picking name that is printed
