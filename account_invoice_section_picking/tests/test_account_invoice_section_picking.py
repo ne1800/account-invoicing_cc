@@ -4,7 +4,6 @@ from odoo.tests.common import Form, SavepointCase
 
 
 class TestAccountInvoiceSectionPicking(SavepointCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -38,9 +37,9 @@ class TestAccountInvoiceSectionPicking(SavepointCase):
             self.order_2.order_line.name,
         ]
         for cnt, invoice_line in enumerate(
-            invoice.line_ids.filtered(
-                lambda l: not l.exclude_from_invoice_tab
-            ).sorted("sequence")
+            invoice.line_ids.filtered(lambda l: not l.exclude_from_invoice_tab).sorted(
+                "sequence"
+            )
         ):
             self.assertEqual(invoice_line.name, result[cnt])
 

@@ -4,7 +4,7 @@
     "name": "Acccount Invoice Section Picking",
     "version": "14.0.1.0.1",
     "summary": "Extension of Acccount Invoice Section Sale Order to allow "
-               "grouping of invoice lines according to delivery picking.",
+    "grouping of invoice lines according to delivery picking.",
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/account-invoicing",
     "license": "AGPL-3",
