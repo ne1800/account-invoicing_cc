@@ -80,7 +80,10 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
     def test_create_invoice(self):
         """ Check invoice is generated  with sale order sections."""
         result = {
-            10: ("".join([self.order1_p1.name, " - ", self.order1_p1.client_order_ref]), "line_section"),
+            10: (
+                "".join([self.order1_p1.name, " - ", self.order1_p1.client_order_ref]),
+                "line_section",
+            ),
             20: ("order 1 line 1", False),
             30: ("order 1 line 2", False),
             40: (self.order2_p1.name, "line_section"),

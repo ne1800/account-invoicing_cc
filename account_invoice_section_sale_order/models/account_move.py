@@ -1,6 +1,6 @@
 # Copyright 2021 Camptocamp SA
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl)
-from odoo import api, fields, models
+from odoo import _, api, models
 from odoo.exceptions import UserError
 
 
@@ -23,7 +23,7 @@ class AccountMoveLine(models.Model):
         invoice_section_grouping = self.env.company.invoice_section_grouping
         if invoice_section_grouping == "sale_order":
             return "sale_line_ids.order_id"
-        raise UserError("Unrecognized invoice_section_grouping")
+        raise UserError(_("Unrecognized invoice_section_grouping"))
 
     @api.model
     def _get_section_ordering(self):

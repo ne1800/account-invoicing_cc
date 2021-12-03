@@ -18,7 +18,10 @@ class SaleOrder(models.Model):
         """
         invoice_ids = super()._create_invoices(grouped=grouped, final=final)
         for invoice in invoice_ids:
-            if len(invoice.line_ids.mapped(invoice.line_ids._get_section_grouping())) == 1:
+            if (
+                len(invoice.line_ids.mapped(invoice.line_ids._get_section_grouping()))
+                == 1
+            ):
                 continue
             sequence = 10
             move_lines = invoice._get_ordered_invoice_lines()
@@ -55,9 +58,12 @@ class SaleOrder(models.Model):
     def _get_invoice_section_name(self):
         """Returns the text for the section name."""
         self.ensure_one()
-        naming_scheme = self.partner_invoice_id.invoice_section_name_scheme or self.company_id.invoice_section_name_scheme
+        naming_scheme = (
+            self.partner_invoice_id.invoice_section_name_scheme
+            or self.company_id.invoice_section_name_scheme
+        )
         if naming_scheme:
-            return safe_eval(naming_scheme, {'object': self, 'time': time})
+            return safe_eval(naming_scheme, {"object": self, "time": time})
         elif self.client_order_ref:
             return "{} - {}".format(self.name, self.client_order_ref or "")
         else:

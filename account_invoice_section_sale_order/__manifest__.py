@@ -14,5 +14,5 @@
         "security/res_groups.xml",
         "views/res_config_settings.xml",
         "views/res_partner.xml",
-    ]
+    ],
 }
