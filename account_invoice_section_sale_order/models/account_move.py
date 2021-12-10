@@ -18,6 +18,9 @@ class AccountMoveLine(models.Model):
 
     _inherit = "account.move.line"
 
+    def _get_section_group(self):
+        return self.mapped(self._get_section_grouping())
+
     @api.model
     def _get_section_grouping(self):
         invoice_section_grouping = self.env.company.invoice_section_grouping

@@ -28,7 +28,7 @@ class SaleOrder(models.Model):
             # Group move lines according to their sale order
             section_grouping_matrix = OrderedDict()
             for move_line in move_lines:
-                group = move_line.mapped(move_line._get_section_grouping())
+                group = move_line._get_section_group()
                 group_move_line_ids = section_grouping_matrix.get(group)
                 if not group_move_line_ids:
                     section_grouping_matrix[group] = [move_line.id]
