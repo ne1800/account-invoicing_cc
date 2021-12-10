@@ -8,4 +8,5 @@ class ResCompany(models.Model):
 
     invoice_section_grouping = fields.Selection(
         selection_add=[("delivery_picking", "Group by delivery picking")],
+        ondelete={"delivery_picking": "set default"},
     )
