@@ -18,10 +18,7 @@ class SaleOrder(models.Model):
         """
         invoice_ids = super()._create_invoices(grouped=grouped, final=final)
         for invoice in invoice_ids:
-            if (
-                len(invoice.line_ids.mapped(invoice.line_ids._get_section_grouping()))
-                == 1
-            ):
+            if len(invoice.line_ids._get_section_group()) == 1:
                 continue
             sequence = 10
             move_lines = invoice._get_ordered_invoice_lines()
@@ -29,11 +26,7 @@ class SaleOrder(models.Model):
             section_grouping_matrix = OrderedDict()
             for move_line in move_lines:
                 group = move_line._get_section_group()
-                group_move_line_ids = section_grouping_matrix.get(group)
-                if not group_move_line_ids:
-                    section_grouping_matrix[group] = [move_line.id]
-                else:
-                    group_move_line_ids.append(move_line.id)
+                section_grouping_matrix.setdefault(group, []).append(move_line.id)
             # Prepare section lines for each group
             section_lines = []
             for group, move_line_ids in section_grouping_matrix.items():
