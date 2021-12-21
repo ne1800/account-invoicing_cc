@@ -8,9 +8,11 @@ class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
     def _get_section_group(self):
+        """Group invoice lines according to uninvoiced delivery pickings"""
         group = super()._get_section_group()
         # If product is invoiced by delivered quantities:
-        #  - filter on done pickings to avoid displaying backorders
+        #  - filter on done pickings to avoid displaying backorders not yet
+        #    processed
         #  - Remove pickings linked with same sale order lines if an invoice
         #    was created after its date_done
         invoice_section_grouping = self.company_id.invoice_section_grouping
