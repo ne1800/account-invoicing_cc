@@ -10,7 +10,9 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
         super().setUpClass()
         cls.partner_1 = cls.env.ref("base.res_partner_1")
         cls.product_1 = cls.env.ref("product.product_product_1")
+        cls.product_2 = cls.env.ref("product.product_product_2")
         cls.product_1.invoice_policy = "order"
+        cls.product_2.invoice_policy = "order"
         cls.order1_p1 = cls.env["sale.order"].create(
             {
                 "partner_id": cls.partner_1.id,
@@ -34,7 +36,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
                         0,
                         {
                             "name": "order 1 line 2",
-                            "product_id": cls.product_1.id,
+                            "product_id": cls.product_2.id,
                             "price_unit": 20,
                             "product_uom_qty": 1,
                             "product_uom": cls.product_1.uom_id.id,
@@ -66,7 +68,7 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
                         0,
                         {
                             "name": "order 2 line 2",
-                            "product_id": cls.product_1.id,
+                            "product_id": cls.product_2.id,
                             "price_unit": 20,
                             "product_uom_qty": 1,
                             "product_uom": cls.product_1.uom_id.id,
@@ -80,12 +82,15 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
     def test_create_invoice(self):
         """ Check invoice is generated  with sale order sections."""
         result = {
-            0: "".join([self.order1_p1.name, " - ", self.order1_p1.client_order_ref]),
-            1: "order 1 line 1",
-            2: "order 1 line 2",
-            3: self.order2_p1.name,
-            4: "order 2 line 1",
-            5: "order 2 line 2",
+            10: (
+                "".join([self.order1_p1.name, " - ", self.order1_p1.client_order_ref]),
+                "line_section",
+            ),
+            20: ("order 1 line 1", False),
+            30: ("order 1 line 2", False),
+            40: (self.order2_p1.name, "line_section"),
+            50: ("order 2 line 1", False),
+            60: ("order 2 line 2", False),
         }
         invoice_ids = (self.order1_p1 + self.order2_p1)._create_invoices()
         lines = (
@@ -93,8 +98,9 @@ class TestInvoiceGroupBySaleOrder(SavepointCase):
             .line_ids.sorted("sequence")
             .filtered(lambda r: not r.exclude_from_invoice_tab)
         )
-        for idx, line in enumerate(lines):
-            self.assertEqual(line.name, result[idx])
+        for line in lines:
+            self.assertEqual(line.name, result[line.sequence][0])
+            self.assertEqual(line.display_type, result[line.sequence][1])
 
     def test_create_invoice_no_section(self):
         """Check invoice for only one sale order
