@@ -1,6 +1,6 @@
 # Copyright 2021 Camptocamp SA
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl)
-from odoo import api, models
+from odoo import models
 
 
 class AccountMoveLine(models.Model):
@@ -13,7 +13,7 @@ class AccountMoveLine(models.Model):
         #  - filter on done pickings to avoid displaying backorders
         #  - Remove pickings linked with same sale order lines if an invoice
         #    was created after its date_done
-        invoice_section_grouping = self.env.company.invoice_section_grouping
+        invoice_section_grouping = self.company_id.invoice_section_grouping
         if (
             invoice_section_grouping == "delivery_picking"
             and self.product_id.invoice_policy == "delivery"
@@ -38,9 +38,8 @@ class AccountMoveLine(models.Model):
             )
         return group
 
-    @api.model
     def _get_section_grouping(self):
-        invoice_section_grouping = self.env.company.invoice_section_grouping
+        invoice_section_grouping = self.company_id.invoice_section_grouping
         if invoice_section_grouping == "delivery_picking":
             return "sale_line_ids.move_ids.picking_id"
         return super()._get_section_grouping()
