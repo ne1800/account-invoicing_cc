@@ -33,18 +33,19 @@ class SaleOrder(models.Model):
             # Prepare section lines for each group
             section_lines = []
             for group, move_line_ids in section_grouping_matrix.items():
-                section_lines.append(
-                    (
-                        0,
-                        0,
-                        {
-                            "name": group._get_invoice_section_name(),
-                            "display_type": "line_section",
-                            "sequence": sequence,
-                        },
+                if group:
+                    section_lines.append(
+                        (
+                            0,
+                            0,
+                            {
+                                "name": group._get_invoice_section_name(),
+                                "display_type": "line_section",
+                                "sequence": sequence,
+                            },
+                        )
                     )
-                )
-                sequence += 10
+                    sequence += 10
                 for move_line in self.env["account.move.line"].browse(move_line_ids):
                     move_line.sequence = sequence
                     sequence += 10
