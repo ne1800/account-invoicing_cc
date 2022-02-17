@@ -1,0 +1,2 @@
+# ⚠️⚠️ REMOVE BEFORE MERGING ⚠️⚠️
+odoo-addon-base_view_inheritance_extension @git+https://github.com/OCA/server-tools@refs/pull/2232/head#subdirectory=setup/base_view_inheritance_extension
