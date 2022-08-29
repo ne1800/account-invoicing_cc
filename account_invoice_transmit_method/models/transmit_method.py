@@ -10,6 +10,7 @@ class TransmitMethod(models.Model):
     _description = "Transmit Method of a document"
 
     name = fields.Char(required=True)
+    active = fields.Boolean("active", default=True)
     code = fields.Char(
         copy=False,
         help="Do not modify the code of an existing Transmit Method "
