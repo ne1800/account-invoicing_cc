@@ -10,6 +10,8 @@ class AccountMove(models.Model):
     _state_from = ["draft"]
     _state_to = ["posted"]
 
+    _tier_validation_manual_config = False
+
     def _get_to_validate_message_name(self):
         name = super(AccountMove, self)._get_to_validate_message_name()
         if self.move_type == "in_invoice":
