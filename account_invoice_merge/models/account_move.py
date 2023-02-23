@@ -8,6 +8,7 @@
 
 from odoo import api, models
 from odoo.tools import float_is_zero
+from odoo.tools.safe_eval import safe_eval
 
 
 class AccountMove(models.Model):
@@ -34,7 +35,7 @@ class AccountMove(models.Model):
             "price_unit",
             "product_id",
             "account_id",
-            "analytic_account_id",
+            "analytic_distribution",
             "product_uom_id",
         ]
         for field in [
@@ -107,7 +108,11 @@ class AccountMove(models.Model):
                     or field == "tax_ids"
                     or field == "sale_line_ids"
                 ):
-                    field_val = ((6, 0, tuple(v.id for v in field_val)),)
+                    # field_val = ((6, 0, tuple(v.id for v in field_val)))
+                    field_val = tuple(v.id for v in field_val)
+                elif field == "analytic_distribution":
+                    field_val = str(field_val)
+
                 list_key.append((field, field_val))
             list_key.sort()
             return tuple(list_key)
@@ -131,7 +136,11 @@ class AccountMove(models.Model):
                 if not keep_references:
                     invoice_infos.pop("name")
             else:
-                if account_invoice.name and keep_references:
+                if (
+                    account_invoice.name
+                    and keep_references
+                    and invoice_infos.get("name") != account_invoice.name
+                ):
                     invoice_infos["name"] = (
                         (invoice_infos["name"] or "") + " " + account_invoice.name
                     )
@@ -158,7 +167,6 @@ class AccountMove(models.Model):
 
             for invoice_line in account_invoice.invoice_line_ids:
                 line_key = make_key(invoice_line, self._get_invoice_line_key_cols())
-
                 o_line = invoice_infos["invoice_line_ids"].setdefault(line_key, {})
 
                 if o_line:
@@ -182,7 +190,17 @@ class AccountMove(models.Model):
                 continue
             # cleanup invoice line data
             for key, value in invoice_data["invoice_line_ids"].items():
-                value.update(dict(key))
+                # value.update(dict(key))
+                k_vals = dict(key)
+                for _f in ["tax_ids", "sale_line_ids"]:
+                    if k_vals.get(_f):
+                        k_vals[_f] = [(6, 0, list(k_vals[_f]))]
+                if k_vals.get("analytic_distribution"):
+                    k_vals["analytic_distribution"] = safe_eval(
+                        k_vals["analytic_distribution"]
+                    )
+
+                value.update(k_vals)
 
             if remove_empty_invoice_lines:
                 invoice_data["invoice_line_ids"] = [
