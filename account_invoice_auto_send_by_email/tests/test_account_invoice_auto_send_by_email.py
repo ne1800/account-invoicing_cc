@@ -105,3 +105,8 @@ class TestAccountInvoiceAutoSendByEmail(SavepointCase):
         )
         self.assertEqual(len(moves), 0)
         self.assertTrue(self.invoice.is_move_sent)
+
+    def test_invoice_not_send_multiple_time(self):
+        self.invoice.is_move_sent = True
+        res = self.invoice._execute_invoice_sent_wizard()
+        self.assertEqual(res, "This invoice has already been sent.")
