@@ -1,7 +1,7 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
 
-from odoo import api, models
+from odoo import _, api, models
 
 
 class AccountMove(models.Model):
@@ -14,6 +14,9 @@ class AccountMove(models.Model):
             invoice.with_delay(description=description)._execute_invoice_sent_wizard()
 
     def _execute_invoice_sent_wizard(self, options=None):
+        self.ensure_one()
+        if self.is_move_sent:
+            return _("This invoice has already been sent.")
         res = self.action_invoice_sent()
         wiz_ctx = res["context"] or {}
         wiz_ctx["active_model"] = self._name
