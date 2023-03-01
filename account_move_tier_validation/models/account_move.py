@@ -12,6 +12,9 @@ class AccountMove(models.Model):
 
     _tier_validation_manual_config = False
 
+    def _get_under_validation_exceptions(self):
+        return super()._get_under_validation_exceptions() + ["needed_terms_dirty"]
+
     def _get_to_validate_message_name(self):
         name = super(AccountMove, self)._get_to_validate_message_name()
         if self.move_type == "in_invoice":
