@@ -15,6 +15,11 @@ class AccountMove(models.Model):
 
     def _execute_invoice_sent_wizard(self, options=None):
         self.ensure_one()
+        if (
+            not self.company_id.ignore_invoice_auto_mail_payment_state_check
+            and self.payment_state != "not_paid"
+        ):
+            return
         if self.is_move_sent:
             return _("This invoice has already been sent.")
         res = self.action_invoice_sent()
@@ -32,5 +37,4 @@ class AccountMove(models.Model):
             ("state", "=", "posted"),
             ("is_move_sent", "=", False),
             ("transmit_method_code", "=", "mail"),
-            ("payment_state", "=", "not_paid"),
         ]

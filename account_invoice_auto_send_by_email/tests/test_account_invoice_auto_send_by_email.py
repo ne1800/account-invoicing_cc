@@ -2,9 +2,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
 import mock
 
+from odoo.tests import tagged
 from odoo.tests.common import SavepointCase
 
 
+@tagged("post_install", "-at_install")
 class TestAccountInvoiceAutoSendByEmail(SavepointCase):
     @classmethod
     def setUpClass(cls):
